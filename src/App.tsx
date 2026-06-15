@@ -1,9 +1,8 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
-import LinearProgress from '@mui/material/LinearProgress';
 import { ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -14,6 +13,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { SearchField } from './components/SearchField';
 import { ThemeToggle } from './components/ThemeToggle';
 import { useBooks } from './hooks/useBooks';
+import { usePersistedAppState } from './hooks/usePersistedAppState';
 import { useThemeMode } from './hooks/useThemeMode';
 import { createAppTheme } from './theme/createAppTheme';
 
@@ -22,24 +22,30 @@ const queryClient = new QueryClient();
 function AppContent() {
   const { mode, toggleMode } = useThemeMode();
   const theme = useMemo(() => createAppTheme(mode), [mode]);
-  const [searchQuery, setSearchQuery] = useState('fiction');
 
-  const handleSearch = useCallback((query: string): void => {
-    setSearchQuery(query);
-  }, []);
+  const {
+    searchInput,
+    debouncedSearch,
+    isSearchPending,
+    setSearchInput,
+    sortModel,
+    filterModel,
+    paginationModel,
+    columnVisibilityModel,
+    setSortModel,
+    setFilterModel,
+    setPaginationModel,
+    setColumnVisibilityModel,
+  } = usePersistedAppState();
 
-  const { books, isLoading, isError, error } = useBooks(searchQuery);
+  const { books, isLoading, isFetching, isError, error } = useBooks(debouncedSearch);
+
+  const showGridLoading = isLoading || isFetching;
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AppBar position="static" elevation={1}>
-        {isLoading && (
-          <LinearProgress
-            color="secondary"
-            sx={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
-          />
-        )}
         <Toolbar>
           <Typography variant="h6" component="h1" sx={{ flexGrow: 1 }}>
             MUI Books DataGrid
@@ -62,7 +68,11 @@ function AppContent() {
           across page reloads.
         </Typography>
 
-        <SearchField onSearch={handleSearch} defaultValue={searchQuery} />
+        <SearchField
+          value={searchInput}
+          onChange={setSearchInput}
+          isSearching={isSearchPending}
+        />
 
         {isError && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -71,7 +81,18 @@ function AppContent() {
         )}
 
         <Box sx={{ width: '100%' }}>
-          <BooksDataGrid books={books ?? []} loading={isLoading} />
+          <BooksDataGrid
+            books={books ?? []}
+            loading={showGridLoading}
+            sortModel={sortModel}
+            filterModel={filterModel}
+            paginationModel={paginationModel}
+            columnVisibilityModel={columnVisibilityModel}
+            onSortModelChange={setSortModel}
+            onFilterModelChange={setFilterModel}
+            onPaginationModelChange={setPaginationModel}
+            onColumnVisibilityModelChange={setColumnVisibilityModel}
+          />
         </Box>
       </Container>
     </ThemeProvider>

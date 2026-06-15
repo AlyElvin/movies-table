@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import type { Book } from '../types/book';
+import { z } from "zod";
+import type { Book } from "../types/book";
 
 const openLibraryDocSchema = z.object({
   key: z.string(),
@@ -15,7 +15,7 @@ const openLibraryResponseSchema = z.object({
   docs: z.array(openLibraryDocSchema),
 });
 
-const PLACEHOLDER_COVER = '/no-cover.svg';
+const PLACEHOLDER_COVER = "/no-cover.svg";
 
 function buildCoverUrl(coverId: number | undefined): string {
   if (coverId === undefined) {
@@ -27,8 +27,8 @@ function buildCoverUrl(coverId: number | undefined): string {
 function mapDocToBook(doc: z.infer<typeof openLibraryDocSchema>): Book {
   return {
     id: doc.key,
-    title: doc.title ?? 'Untitled',
-    author: doc.author_name?.join(', ') ?? 'Unknown author',
+    title: doc.title ?? "Untitled",
+    author: doc.author_name?.join(", ") ?? "Unknown author",
     publishYear: doc.first_publish_year ?? null,
     pages: doc.number_of_pages_median ?? null,
     coverUrl: buildCoverUrl(doc.cover_i),
@@ -39,20 +39,20 @@ function mapDocToBook(doc: z.infer<typeof openLibraryDocSchema>): Book {
 export async function fetchBooks(query: string): Promise<Book[]> {
   const params = new URLSearchParams({
     q: query,
-    limit: '50',
+    limit: "500",
     fields:
-      'key,title,author_name,first_publish_year,cover_i,number_of_pages_median,isbn',
+      "key,title,author_name,first_publish_year,cover_i,number_of_pages_median,isbn",
   });
 
   const response = await fetch(
-    `https://openlibrary.org/search.json?${params.toString()}`,
+    `https://openlibrary.org/search.json?${params.toString()}`
   );
 
   if (!response.ok) {
     throw new Error(`Open Library API error: ${response.status}`);
   }
 
-  const json: unknown = await response.json();
+  const json: z.infer<typeof openLibraryResponseSchema> = await response.json();
   const parsed = openLibraryResponseSchema.parse(json);
 
   return parsed.docs.map(mapDocToBook);

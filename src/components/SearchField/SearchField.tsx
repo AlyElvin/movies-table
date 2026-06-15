@@ -1,31 +1,26 @@
-import { useEffect, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
+import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 
 interface SearchFieldProps {
-  onSearch: (query: string) => void;
-  defaultValue?: string;
+  value: string;
+  onChange: (value: string) => void;
+  isSearching?: boolean;
 }
 
-export function SearchField({ onSearch, defaultValue = 'fiction' }: SearchFieldProps) {
-  const [value, setValue] = useState(defaultValue);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onSearch(value.trim() || 'fiction');
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [value, onSearch]);
-
+export function SearchField({
+  value,
+  onChange,
+  isSearching = false,
+}: SearchFieldProps) {
   return (
     <TextField
       fullWidth
       label="Search books"
       placeholder="e.g. fiction, javascript, tolkien..."
       value={value}
-      onChange={(e) => setValue(e.target.value)}
+      onChange={(e) => onChange(e.target.value)}
       slotProps={{
         input: {
           startAdornment: (
@@ -33,6 +28,11 @@ export function SearchField({ onSearch, defaultValue = 'fiction' }: SearchFieldP
               <SearchIcon color="action" />
             </InputAdornment>
           ),
+          endAdornment: isSearching ? (
+            <InputAdornment position="end">
+              <CircularProgress size={20} />
+            </InputAdornment>
+          ) : undefined,
         },
       }}
       sx={{ mb: 2 }}
