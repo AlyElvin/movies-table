@@ -4,7 +4,7 @@ A React demo application built with **Material UI** and **MUI X DataGrid**. It d
 
 ## Live Demo
 
-> Add your deployed URL here after publishing (e.g. `https://mui-books-datagrid.netlify.app`).
+**Production:** [https://fancy-profiterole-382044.netlify.app](https://fancy-profiterole-382044.netlify.app)
 
 Local development: `npm run dev` → [http://localhost:5173](http://localhost:5173)
 
