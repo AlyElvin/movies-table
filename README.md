@@ -4,7 +4,31 @@
 
 ## Live Demo
 
-> После деплоя на Netlify ссылка будет добавлена сюда: `https://<your-site>.netlify.app`
+После деплоя добавьте ссылку сюда. Локально: `npm run dev` → `http://localhost:5173`
+
+### Публикация на GitHub
+
+```bash
+# Создайте репозиторий на GitHub, затем:
+git remote add origin https://github.com/<username>/mui-books-datagrid.git
+git push -u origin main
+```
+
+### Публикация на Netlify
+
+1. Войдите на [app.netlify.com](https://app.netlify.com)
+2. **Add new site** → **Import an existing project** → выберите GitHub-репозиторий
+3. Настройки подхватятся из `netlify.toml` автоматически
+4. После деплоя скопируйте URL (например `https://mui-books-datagrid.netlify.app`) в секцию **Live Demo** выше
+
+Альтернатива через CLI:
+
+```bash
+npm install -g netlify-cli
+netlify login
+npm run build
+netlify deploy --prod --dir=dist
+```
 
 ## Возможности
 

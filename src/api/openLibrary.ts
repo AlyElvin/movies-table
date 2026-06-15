@@ -15,8 +15,7 @@ const openLibraryResponseSchema = z.object({
   docs: z.array(openLibraryDocSchema),
 });
 
-const PLACEHOLDER_COVER =
-  'https://via.placeholder.com/120x180?text=No+Cover';
+const PLACEHOLDER_COVER = '/no-cover.svg';
 
 function buildCoverUrl(coverId: number | undefined): string {
   if (coverId === undefined) {
